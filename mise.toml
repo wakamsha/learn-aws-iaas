@@ -1,2 +1,5 @@
 [tools]
 terraform = "1.16.5"
+
+[env]
+AWS_PROFILE = "learn"

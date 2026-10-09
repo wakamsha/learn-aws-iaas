@@ -19,9 +19,9 @@ main のこのテンプレートには書き込まない。
 
 <!-- セッションの終わりに Claude が更新する。何週間も空く前提で書く -->
 
-- 次にやること: Phase 0 の「Console で S3 バケットを手で作って消す」。最初の `.tf` を保存したとき、VS Code の保存時フォーマットが効くかを見る
-- そのとき最初に考える問い: Console のバケット作成画面で、デフォルトのまま作ると誰がそのバケットを読めるか
-- 前回から持ち越している疑問: なし
+- 次にやること: `phase0-hello/` で `terraform init` を実行し、`.terraform.lock.hcl` の `constraints` を `~> 6.68` に合わせて commit する。続けて Phase 0 の振り返り(項目は `CLAUDE.md` の「振り返り」)
+- そのとき最初に考える問い: Console で作ったバケットは `PutBucketPublicAccessBlock` を呼ばずにパブリックアクセスがブロックされていた。Terraform は作成直後に十数個の `Get*` を呼んでいた。それぞれ何を意味するか(CloudTrail の集計は `LEARNING-LOG-PHASE0.md`)
+- 前回から持ち越している疑問: アカウント単位のブロックパブリックアクセスを有効にするか。既存の Route 53 / CloudFront の構成が公開バケットに依存していないかを確かめてから決める
 
 ## 全体
 
@@ -39,13 +39,13 @@ main のこのテンプレートには書き込まない。
 ## Phase 0
 
 - [x] 環境構築(SETUP-AWS-ACCOUNT / SETUP-TOOLCHAIN)
-- [ ] Console で S3 バケットを手で作って消す
-- [ ] `phase0-hello/` で S3 バケット
-- [ ] `init` が作ったものの確認
-- [ ] plan → apply → `state list` / `state show`
-- [ ] drift
-- [ ] replace
-- [ ] destroy
+- [x] Console で S3 バケットを手で作って消す
+- [x] `phase0-hello/` で S3 バケット
+- [x] `init` が作ったものの確認
+- [x] plan → apply → `state list` / `state show`
+- [x] drift
+- [x] replace
+- [x] destroy
 - [ ] 振り返り
 
 ### 確定した設計判断

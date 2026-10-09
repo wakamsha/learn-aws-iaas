@@ -52,6 +52,7 @@ Fargate を `X86_64` で動かすなら `docker buildx build --platform linux/am
 HashiCorp 公式の Terraform 拡張を入れる。
 
 フォーマットは `terraform fmt` を正とする。VS Code の保存時フォーマットは、リポジトリの `.vscode/settings.json` で Terraform 拡張に任せている(拡張は `terraform fmt` を呼ぶ)。
+保存時フォーマットが効かない環境では、plan の前に `terraform fmt` を実行する。
 
 ## lint(Phase 4 から)
 
