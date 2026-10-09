@@ -1,0 +1,34 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# 値に秘密や個人情報（自宅 IP など）が入りやすいので除外。サンプルは *.tfvars.example として commit する
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+
+# NOTE: .terraform.lock.hcl は commit する(package-lock.json と同じ役割)
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Node
+node_modules/
+
+# OS / Editor
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
