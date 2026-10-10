@@ -64,3 +64,38 @@
 | Terraform | `CreateBucket`(タグを同時に指定)、`PutBucketPublicAccessBlock`、`PutBucketVersioning` |
 
 Terraform は `CreateBucket` の直後に、十数個の `Get*`(`GetBucketCors`、`GetBucketLogging`、`GetBucketWebsite` など)を呼ぶ。
+
+- Console のバケットで、`PutBucketPublicAccessBlock` を呼ばずにパブリックアクセスがブロックされているのは、S3 の新しいバケットのデフォルトだから。Console の機能ではない。Terraform で明示的に書くのは、コードに書いた設定だけが drift として検出されるため
+- 暗号化は、Console が `PutBucketEncryption` を明示的に呼んでいる。サービスのデフォルトに任せるか明示的に呼ぶかは、設定ごとに分かれる
+- Terraform の `Get*` は、state を埋めるための読み取り。S3 にはバケットの設定をまとめて返す API がなく、`aws_s3_bucket` の schema には CORS・ログ・Website などの属性が残っている。そのため、コードに書いていない設定も 1 つずつ読む
+
+## 振り返り
+
+### 今回作ったもの
+
+バージョニングとパブリックアクセスブロックを設定した S3 バケット 1 つ。作成・drift・replace・destroy を一通り起こし、plan の記号と state の役割を確かめた。
+
+### コードの構成
+
+`versions.tf` / `providers.tf` / `main.tf` / `outputs.tf` の 4 ファイル。バージョンの制約と provider の設定を、リソースから分けた。タグは provider の `default_tags` で全リソースに付ける。
+
+### 難しかった点
+
+- Terraform が管理するインフラの構成(state)と、実際に作られている AWS の構成が完全には一致しない点(`tags_all` の件)。初学者にとって負担が大きい
+  - `tags` はコードに書いたタグ、`tags_all` は `default_tags` を合わせて AWS に付くタグ。state は両方を持っている
+
+### 構築の順序についての考え
+
+0 → 1 でインフラを作るときは、いきなりコードから始めるのではなく、Console で構築してからコードに落とし込む順序の方が筋が通っているのではないか。
+
+- Console は、設定項目とデフォルト値を知る場所として使える。Phase 0 でも、Console でバケットを手で作ってから Terraform で書いた
+- Console で作ったものを、そのまま Terraform の管理下に置くには `import` が要る。Console が暗黙に設定したデフォルトは、コードに書かない限り drift として検出されない
+
+### 作り直すなら改善したい点
+
+- 暗号化の設定をコードに書く。今はサービスのデフォルトに任せていて、変えられても plan に出ない
+- バケット名のアカウント ID を直書きせず、`aws_caller_identity` data source から取る(Phase 1 で扱う)
+
+### 次に学ぶこと
+
+複数のリソースが互いを参照する構成と、リソースベースのポリシー(Phase 1)。

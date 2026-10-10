@@ -73,6 +73,7 @@
 | ForceNew | provider が「この引数を変えたら replace になる」と定義していること。多くは AWS API がその変更を提供していないことに由来する | 0 |
 | `import` | Terraform の外で作られた既存のリソースを、state に取り込む操作 | 必要時 |
 | `default_tags` | provider ブロックに書く、すべてのリソースに付けるタグ | 0 |
+| `tags` / `tags_all` | `tags` はリソースに書いたタグ、`tags_all` は `default_tags` と合わせて実際に付くタグ | 0 |
 | ルートモジュール | `terraform` コマンドを実行するディレクトリの `.tf` ファイル群 | 0 |
 | data source | 既存のリソースや情報を読み取るだけのブロック。`data "..." "..." { ... }` の形で書く | 1 |
 | 暗黙の参照 | あるリソースの属性を別のリソースの引数に書くこと。Terraform はこれを見て作成順序を決める | 1 |
