@@ -19,8 +19,8 @@ main のこのテンプレートには書き込まない。
 
 <!-- セッションの終わりに Claude が更新する。何週間も空く前提で書く -->
 
-- 次にやること: Phase 1 の要件定義。`ROADMAP.md` の「プロダクト側の要求」を読み、過不足を検討する
-- そのとき最初に考える問い: 「S3 は直接公開しない」のに、CloudFront からは読ませたい。この「誰に読ませるか」は、Phase 0 で見た IAM ポリシー(AdministratorAccess のような、主体の側に付けるもの)のほかに、どこに書けるか
+- 次にやること: Phase 1 の実装。`phase1-static-site/` を作り、確定した設計(この下の Phase 1 の表)を Terraform で書く。サンプルの SPA を Vite で用意する
+- そのとき最初に考える問い: バケット・OAC・CloudFront・バケットポリシーを、どの順に書いて apply すれば、途中で 1 つずつ確かめられるか
 - 前回から持ち越している疑問: アカウント単位のブロックパブリックアクセスを有効にするか。既存の Route 53 / CloudFront の構成が公開バケットに依存していないかを確かめてから決める
 
 ## 全体
@@ -62,8 +62,8 @@ main のこのテンプレートには書き込まない。
 
 ## Phase 1
 
-- [ ] 要件定義
-- [ ] 構成設計
+- [x] 要件定義
+- [x] 構成設計
 - [ ] `phase1-static-site/` の構築
 - [ ] ビルド成果物のアップロード
 - [ ] 検証
@@ -74,6 +74,14 @@ main のこのテンプレートには書き込まない。
 
 | 論点 | 決定 |
 | --- | --- |
+| ドメインと証明書 | CloudFront のデフォルトドメイン(`*.cloudfront.net`)と、その既定の証明書で HTTPS を配信する。独自ドメインと ACM 証明書は発展課題 |
+| アクセス制限 | かけない。URL を知っていれば誰でも開ける。配信するのは中身のないサンプルの SPA に限る |
+| 存在しないパス | SPA の 404 画面を表示し、HTTP ステータスは 200。社内向けで検索エンジンに載らないため |
+| S3 への読み取り | OAC。バケットポリシーで `cloudfront.amazonaws.com` に `s3:GetObject` を許し、`AWS:SourceArn` でこのディストリビューションに限る。`s3:ListBucket` は許さない |
+| 存在しないパスの処理 | ディストリビューションの `custom_error_response` で、オリジンの 403 を `/index.html` と 200 に置き換える |
+| セキュリティヘッダー | マネージドのレスポンスヘッダーポリシー(SecurityHeadersPolicy) |
+| `index.html` のキャッシュ | ブラウザは `Cache-Control: no-cache`。CloudFront にはキャッシュさせない(デフォルトのビヘイビアに `CachingDisabled`) |
+| `/assets/*` のキャッシュ | ブラウザは `Cache-Control: public, max-age=31536000, immutable`。CloudFront にもキャッシュさせる(`/assets/*` のビヘイビアに `CachingOptimized`) |
 
 ---
 
