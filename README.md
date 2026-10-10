@@ -5,6 +5,7 @@ Claude Code を家庭教師として伴走させる。
 
 - カリキュラムと Tutor の振る舞い: [CLAUDE.md](./CLAUDE.md)
 - 計画: [docs/ROADMAP.md](./docs/ROADMAP.md)
+- 用語集: [docs/GLOSSARY.md](./docs/GLOSSARY.md)
 - 進捗: run ブランチの `docs/PROGRESS.md`
 
 ## ブランチ

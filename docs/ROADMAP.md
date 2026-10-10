@@ -396,6 +396,10 @@ Phase をまたいで繰り返す作業、および環境設定は、記憶で�
 - [COST-GUARDRAILS.md](./COST-GUARDRAILS.md) — 課金の性質と後片付けのチェックリスト
 - [CONSOLE-OBSERVATION.md](./CONSOLE-OBSERVATION.md) — Console の裏側を観察する道具と観点
 
+## 用語集
+
+カリキュラムに出てくる用語は [GLOSSARY.md](./GLOSSARY.md) に分野ごとにまとめてある。
+
 ## 学びの記録
 
 各 Phase で得た知見は、run ブランチで Phase ごとに 1 ファイル(`docs/LEARNING-LOG-PHASE{N}.md`)として記録する。
