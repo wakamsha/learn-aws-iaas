@@ -103,6 +103,17 @@ graph TD
 - アセット → `index.html` の順に上げる。古い `index.html` を開いたままの利用者が古いアセットを取りに来るので、`sync --delete` で古いアセットを消さない
 - 深いパスの応答は `x-cache: Error from cloudfront` になる。オリジンの 403 を CloudFront が差し替えたことが分かる
 
+### 命名とファイル分割の規則
+
+HashiCorp の Terraform Style Guide に従う。
+
+- 名前は説明的な名詞にし、単語は `_` で区切る(`web_api`)
+- 名前にリソースの型を繰り返さない。アドレス(`aws_s3_bucket.this`)に型が既に含まれる。ディレクトリで分かること(`phase1`)も繰り返さない
+- その型のリソースが 1 つしかなければ `this` にする。AWS provider の公式 module(terraform-aws-modules)の慣習
+- 同じ型が複数あるときは、役割で名前を付ける(`caching_disabled` / `caching_optimized`)
+- ファイルは `terraform.tf`(`required_version` と `required_providers`)/ `providers.tf` / `main.tf` / `variables.tf` / `outputs.tf` / `locals.tf` に分ける
+- リソースが増えたら、`main.tf` を論理的なまとまり(`network.tf`、`storage.tf` など)に分ける。基準は、目的のリソースがどのファイルにあるかがすぐ分かること
+
 ## Console で見たもの
 
 - ディストリビューションのオリジンの編集画面では、OAC を作成済みのものから選ぶ。Terraform で作った `learn-aws-iaas-phase1` も一覧に出る
@@ -123,3 +134,30 @@ graph TD
 - 200 が返ることは「許可されている」ことしか示さない。条件の値をわざと外して 403 になることを見て、許可を絞れていることを確かめる
 - オリジンの設定を確かめるときは、CloudFront にキャッシュされないパスを使う。キャッシュが残っている間は、オリジンを壊しても利用者からは正常に見える
 - `custom_error_response` の差し替え用の `/index.html` も、オリジンから同じ権限で取得する。それも拒否されると、403 がそのまま返る
+
+## 振り返り
+
+### 今回作ったもの
+
+Vite でビルドした SPA を、CloudFront のデフォルトドメインから HTTPS で配信する基盤。S3 は OAC 経由でだけ読め、直接のアクセスは拒否する。深いパスと存在しないパスは `custom_error_response` で `index.html` を返し、`/assets/*` だけを CloudFront とブラウザに長くキャッシュさせる。
+
+### コードの構成
+
+`versions.tf` / `providers.tf` / `s3.tf` / `cloudfront.tf` / `output.tf` に分けた。バケットとバケットポリシーは `s3.tf`、OAC とディストリビューションは `cloudfront.tf` に置く。
+
+### 難しかった点
+
+- Terraform の書き方・設計がまだ手に馴染んでいない
+- Phase 0 では `main.tf` に全てを記述していたのを `cloudfront.tf` / `s3.tf` に分割したが、両ファイルが相互参照しているため複雑感が増している。ファイルが 2 つだからまだ何とか理解できるが、更にリソースが増えると理解が追いつかなくなりそう
+  - Terraform は、同じディレクトリの `.tf` ファイルをすべて 1 つのモジュールとして読む。ファイルの分け方と並び順は、Terraform の動作には影響しない。依存関係を決めるのは参照だけ
+  - ES Modules のように、ファイルごとにスコープや `import` があるわけではない。全ファイルを連結した 1 つのファイルに近い
+  - 依存関係は `terraform graph` で図にできる。入力と出力を明示した境界(module)は Phase 3 で扱う
+
+### 作り直すなら改善したい点
+
+- `ordered_cache_behavior` の `compress` を `true` にする。plan では `compress = false` になっていて、JavaScript と CSS が圧縮されずに配信される
+- アップロードの 3 つのコマンドを 1 つのスクリプトにまとめる。アセット → `index.html` の順番を、手順書ではなくスクリプトで守らせる。Phase 4 で CI に載せるときの土台になる
+
+### 次に学ぶこと
+
+通信経路を自分で組み立てる VPC とネットワーク(Phase 2)。
