@@ -90,3 +90,15 @@ graph TD
 - バケットポリシーを足すと CloudFront 経由は 200 になり、S3 への直接アクセスは 403 のまま
 - `AWS:SourceArn` には、リクエスト元のディストリビューションの ARN が入る。`values` はリソースの `arn` 属性を参照して書く
 - レスポンスヘッダーポリシーのヘッダーは、エラー応答にも付く
+
+### plan の `~` は「変わるかもしれない」を含む
+
+- data source が、変更予定のあるリソースを参照していると、読み取りが apply まで遅れる(`will be read during apply`)
+- その data source を使うリソースは、値が `(known after apply)` になり `~` と表示される。実際の値が変わらなければ、apply 後の plan は `No changes` になる
+
+### アップロードの順番と `custom_error_response` の副作用
+
+- `custom_error_response` はディストリビューション全体に効く。存在しないアセット(`/assets/no-such.js`)も、`index.html` が `200` と `text/html` で返る
+- そのため、`index.html` を先に上げると、新しいアセットがまだない間、ブラウザは HTML を JavaScript として受け取って画面が壊れる。404 にならないので気づきにくい
+- アセット → `index.html` の順に上げる。古い `index.html` を開いたままの利用者が古いアセットを取りに来るので、`sync --delete` で古いアセットを消さない
+- 深いパスの応答は `x-cache: Error from cloudfront` になる。オリジンの 403 を CloudFront が差し替えたことが分かる
