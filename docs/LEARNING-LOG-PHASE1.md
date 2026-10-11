@@ -76,3 +76,17 @@ graph TD
   - `no-cache` は「保存してよいが、使う前に毎回オリジンに確かめる」という意味。保存そのものを禁じるのは `no-store`
 - 新しい `index.html` は新しいハッシュ付きのファイル名を参照する。ブラウザにとっては初めての URL なので、古いアセットのキャッシュは使われない
 - `immutable` は再検証を省く指示で、有効期限は決めない。期限は `max-age` で決める
+
+### `data` と `resource`
+
+- `resource` は AWS にものを作り、Terraform が管理する。`data` は作らずに値を得るだけで、destroy しても何も起きない
+- data source の値は plan の時点で確定する。これから作る resource の属性は `(known after apply)` になる
+- `aws_iam_policy_document` は AWS に問い合わせず、provider が手元で JSON を組み立てる
+- `aws_s3_bucket_policy` のように、同じ名前が `resource` と `data` の両方にあることがある。data の `policy` は読んだ結果を入れる属性なので、指定すると `Value for unconfigurable attribute` になる
+
+### バケットポリシーの効き方
+
+- バケットポリシーがない状態では、CloudFront 経由のリクエストも S3 が 403 `AccessDenied` で拒否する。応答の `server: AmazonS3` と S3 形式の XML から、拒否したのが S3 だと分かる
+- バケットポリシーを足すと CloudFront 経由は 200 になり、S3 への直接アクセスは 403 のまま
+- `AWS:SourceArn` には、リクエスト元のディストリビューションの ARN が入る。`values` はリソースの `arn` 属性を参照して書く
+- レスポンスヘッダーポリシーのヘッダーは、エラー応答にも付く
