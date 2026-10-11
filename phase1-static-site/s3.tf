@@ -18,7 +18,8 @@ data "aws_iam_policy_document" "bucket_policy" {
 }
 
 resource "aws_s3_bucket" "this" {
-  bucket = "learn-aws-iaas-phase1-${data.aws_caller_identity.current.account_id}"
+  bucket        = "learn-aws-iaas-phase1-${data.aws_caller_identity.current.account_id}"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_versioning" "this" {

@@ -103,6 +103,11 @@ graph TD
 - アセット → `index.html` の順に上げる。古い `index.html` を開いたままの利用者が古いアセットを取りに来るので、`sync --delete` で古いアセットを消さない
 - 深いパスの応答は `x-cache: Error from cloudfront` になる。オリジンの 403 を CloudFront が差し替えたことが分かる
 
+## Console で見たもの
+
+- ディストリビューションのオリジンの編集画面では、OAC を作成済みのものから選ぶ。Terraform で作った `learn-aws-iaas-phase1` も一覧に出る
+- OAC はディストリビューションに属さない、アカウント単位の独立したリソース。複数のディストリビューションで使い回せる。Terraform でも、ディストリビューションとは別の `aws_cloudfront_origin_access_control` として書く
+
 ## 検証
 
 | 確かめたこと | 結果 |
