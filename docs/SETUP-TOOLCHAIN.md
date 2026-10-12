@@ -8,12 +8,25 @@
 
 バージョンはリポジトリ内のファイルで固定し、バージョン管理ツールに読ませる。
 
-- [mise](https://mise.jdx.dev/) を使う場合は、リポジトリ直下の `mise.toml` に `terraform` のバージョンを書く
-- tfenv を使う場合は `.terraform-version` に書く
+[mise](https://mise.jdx.dev/) を使い、リポジトリ直下の `mise.toml` にバージョンを書く。
 
-どちらにするかは最初の周で決め、決めたらこのファイルに追記する。
+```toml
+[tools]
+terraform = "<バージョン>"
+```
 
-各 Phase の `versions.tf` には、`required_version` と AWS provider のバージョン制約を書く。
+```sh
+# シェルの起動時に mise を有効にする(初回のみ)。追記後に新しいターミナルを開く
+echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
+
+mise trust     # 初めて読む mise.toml を信頼する
+mise install
+terraform version
+```
+
+`terraform: command not found` になるときは `mise doctor` を実行し、`activated: yes` になっているかを見る。
+
+各 Phase の `terraform.tf` には、`required_version` と AWS provider のバージョン制約を書く。
 **バージョン番号は記憶で書かず、** [Terraform のリリース](https://releases.hashicorp.com/terraform/) と
 [AWS provider](https://registry.terraform.io/providers/hashicorp/aws/latest) で確かめる。
 
@@ -38,7 +51,8 @@ Fargate を `X86_64` で動かすなら `docker buildx build --platform linux/am
 
 HashiCorp 公式の Terraform 拡張を入れる。
 
-フォーマットは `terraform fmt` を正とする。エディタの保存時フォーマットは、`terraform fmt` を呼ぶ設定にする。
+フォーマットは `terraform fmt` を正とする。VS Code の保存時フォーマットは、リポジトリの `.vscode/settings.json` で Terraform 拡張に任せている(拡張は `terraform fmt` を呼ぶ)。
+保存時フォーマットが効かない環境では、plan の前に `terraform fmt` を実行する。
 
 ## lint(Phase 4 から)
 

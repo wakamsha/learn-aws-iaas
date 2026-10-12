@@ -63,7 +63,7 @@
 | `terraform fmt` / `validate` | `fmt` はコードの整形、`validate` は構文と参照の整合の確認。どちらも AWS に問い合わせない | 0 |
 | `.terraform/` | `init` がダウンロードした provider などを置くディレクトリ。commit しない | 0 |
 | `.terraform.lock.hcl` | 使う provider のバージョンとハッシュを固定するファイル。commit する | 0 |
-| `required_version` / バージョン制約 | `versions.tf` に書く、Terraform 本体と provider の許容バージョンの範囲 | 0 |
+| `required_version` / バージョン制約 | `terraform.tf` に書く、Terraform 本体と provider の許容バージョンの範囲 | 0 |
 | state | Terraform が「どのリソースを自分が管理しているか」と、その属性を記録したもの。既定では `terraform.tfstate` というファイル。秘密情報が平文で入り得る | 0 |
 | ローカル state | state を手元のファイルに置く方式。Phase 0〜3 はこれを使う | 0 |
 | drift | Console などで手で変更され、実際のリソースがコードや state と食い違った状態 | 0 |
@@ -73,8 +73,10 @@
 | ForceNew | provider が「この引数を変えたら replace になる」と定義していること。多くは AWS API がその変更を提供していないことに由来する | 0 |
 | `import` | Terraform の外で作られた既存のリソースを、state に取り込む操作 | 必要時 |
 | `default_tags` | provider ブロックに書く、すべてのリソースに付けるタグ | 0 |
+| `tags` / `tags_all` | `tags` はリソースに書いたタグ、`tags_all` は `default_tags` と合わせて実際に付くタグ | 0 |
 | ルートモジュール | `terraform` コマンドを実行するディレクトリの `.tf` ファイル群 | 0 |
 | data source | 既存のリソースや情報を読み取るだけのブロック。`data "..." "..." { ... }` の形で書く | 1 |
+| 文字列補間 | `"prefix-${式}"` の形で、文字列の中に式の値を埋め込む書き方 | 1 |
 | 暗黙の参照 | あるリソースの属性を別のリソースの引数に書くこと。Terraform はこれを見て作成順序を決める | 1 |
 | 依存グラフ | リソース間の参照から Terraform が組み立てる、作成・削除の順序 | 1 |
 | `depends_on` | 参照では表せない依存関係を明示的に書く引数 | 1 |
@@ -127,6 +129,7 @@
 | サブネット | VPC の CIDR を分割した範囲。1 つの AZ に属する | 2 |
 | public subnet / private subnet | インターネットと直接やり取りできるサブネットと、できないサブネット。サブネット自体にこの設定はなく、関連付けたルートテーブルで決まる | 2 |
 | ルートテーブル | 宛先ごとに、パケットを次にどこへ送るかを決める表。サブネットに関連付ける | 2 |
+| local ルート | ルートテーブルに自動で入る、VPC の CIDR 宛てのルート。VPC 内のサブネット同士はこれで通信できる。削除できない | 2 |
 | Internet Gateway(IGW) | VPC とインターネットをつなぐ出入口 | 2 |
 | NAT Gateway | private subnet から外へ出る通信を、自分のパブリック IP に置き換えて中継するもの。外から内への通信は通さない。時間課金 | 2 |
 | パブリック IPv4 アドレス | インターネットから到達できる IPv4 アドレス。時間課金 | 2 |
