@@ -14,8 +14,8 @@
 
 <!-- セッションの終わりに Claude が更新する。何週間も空く前提で書く -->
 
-- 次にやること: Phase 0 の基礎。AWS アカウントと手元のツールは前の周で用意してあるので、`SETUP-AWS-ACCOUNT.md` と `SETUP-TOOLCHAIN.md` に沿って、今の設定が手順どおりかを確かめる
-- そのとき最初に考える問い: Terraform は、手元の PC から AWS のどの API を、誰の権限で呼んでいるか
+- 次にやること: Phase 1 の基礎、単元 1「IAM ポリシーの文法」。教材は `docs/lessons/` に、単元に入る直前に Tutor が作る。AWS のリソースは作らない
+- そのとき最初に考える問い: Phase 0 では、バケットを誰が読めるかを一度も書かなかったのに、外からは読めなかった。誰が何をできるかは、どこに書かれているのか
 - 前回から持ち越している疑問: アカウント単位のブロックパブリックアクセスを有効にするか。既存の Route 53 / CloudFront の構成が公開バケットに依存していないかを確かめてから決める
 
 ## あやふやな点
@@ -24,11 +24,17 @@
 
 -
 
+## カリキュラムへの反映候補
+
+run を終えたら `main` の `CLAUDE.md` / `ROADMAP.md` に反映する。
+
+- 前の周でやった作業でも、指示を省略しない。前の周を知らない学習者が、その指示だけで完了できる粒度で渡す(`CLAUDE.md` の「課題を出す前に、完了条件を全部渡す」)
+
 ## 全体
 
 | Phase | 作るもの | 状態 |
 | --- | --- | --- |
-| 0 | S3 バケット 1 つ | ⬜ |
+| 0 | S3 バケット 1 つ | ✅ |
 | 1 | 静的サイト配信基盤 | ⬜ |
 | 2 | VM ベースの Web システム | ⬜ |
 | 3 | コンテナベースの Web システム | ⬜ |
@@ -41,19 +47,19 @@
 
 ### 基礎
 
-- [ ] 環境構築(SETUP-AWS-ACCOUNT / SETUP-TOOLCHAIN)
-- [ ] Console で S3 バケットを手で作って消す
+- [x] 環境構築(SETUP-AWS-ACCOUNT / SETUP-TOOLCHAIN)
+- [x] Console で S3 バケットを手で作って消す
 
 ### ガイド付き構築
 
-- [ ] TERRAFORM-STYLE を読む
-- [ ] `phase0-hello/` で S3 バケット
-- [ ] `init` が作ったものの確認
-- [ ] plan → apply → `state list` / `state show`
-- [ ] drift
-- [ ] replace
-- [ ] destroy
-- [ ] 振り返り
+- [x] TERRAFORM-STYLE を読む
+- [x] `phase0-hello/` で S3 バケット
+- [x] `init` が作ったものの確認
+- [x] plan → apply → `state list` / `state show`
+- [x] drift
+- [x] replace
+- [x] destroy
+- [x] 振り返り
 
 ### 確定した設計判断
 
